@@ -1,0 +1,1 @@
+libsvdrp is an interface library to allow C programs to interact with a running VDR, using the SVDRP protocol.
