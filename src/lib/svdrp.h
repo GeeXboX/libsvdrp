@@ -28,6 +28,9 @@
  * GeeXboX libsvdrp public API header.
  */
 
+/** \brief libsvdrp version */
+#define LIBSVDRP_VERSION "0.0.1"
+
 /** \brief Default timeout for SVDRP connections */
 #define SVDRP_DEFAULT_TIMEOUT 30
 
