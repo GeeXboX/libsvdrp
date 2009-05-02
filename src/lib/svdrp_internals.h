@@ -36,6 +36,7 @@ struct svdrp_s {
     int conn;
     int last_reply_code;
     char *last_reply;
+    char *name;
     char *version;
     char *charset;
 };

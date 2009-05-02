@@ -60,13 +60,30 @@ static void svdrp_parse_banner(svdrp_t *svdrp, const char *banner)
     
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
     
+    /* grab VDR name */
+    p = mybanner;
+    q = strstr(mybanner, " ");
+    len = q - p + 1;
+    *q = '\0';
+    svdrp->name = malloc(len);
+    strncpy(svdrp->name, p, len);
+    
     /* grab VDR version number */
-    p = strstr(mybanner, "VideoDiskRecorder") + strlen("VideoDiskRecorder") + 1;
-    q = strstr(mybanner, ";");
+    p = strstr(q + 1, "VideoDiskRecorder") + strlen("VideoDiskRecorder") + 1;
+    q = strstr(q + 1, ";");
     len = q - p + 1;
     *q = '\0';
     svdrp->version = malloc (len);
     strncpy(svdrp->version, p, len);
+    
+    /* grab VDR charset */
+    p = strstr(q + 1, ";") + 2;
+    q = p + strlen(p) - 2;
+    len = q - p + 1;
+    *q = '\0';
+    svdrp->charset = malloc(len);
+    strncpy(svdrp->charset, p, len);    
+    
     free(mybanner);
 }
 
@@ -103,7 +120,7 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
             break;
         case SVDRP_REPLY_READY:
             svdrp_parse_banner(svdrp, line + 4);
-            svdrp_log (svdrp, SVDRP_MSG_INFO, "Connected to VDR %s on %s", svdrp->version, svdrp->host);
+            svdrp_log (svdrp, SVDRP_MSG_INFO, "Connected to VDR %s on %s (%s)", svdrp->version, svdrp->name, svdrp->charset);
             break;
         case SVDRP_REPLY_OK:
             svdrp_log (svdrp, SVDRP_MSG_INFO, "Operation successfully completed");
