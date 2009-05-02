@@ -292,3 +292,17 @@ int svdrp_set_remote(svdrp_t *svdrp, int state)
     
     return svdrp_simple_cmd(svdrp, cmd);
 }
+
+const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property)
+{
+    svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
+
+    switch (property)
+    {
+    case SVDRP_PROPERTY_NAME:    return svdrp->name;
+    case SVDRP_PROPERTY_VERSION: return svdrp->version;
+    case SVDRP_PROPERTY_CHARSET: return svdrp->charset;
+    }
+    
+    return NULL;
+}

@@ -119,6 +119,13 @@ typedef enum {
     SVDRP_KEY_USER9,
 } svdrp_key_t;
 
+/** \brief SVDRP property. */
+typedef enum {
+    SVDRP_PROPERTY_NAME,          /**< VDR server name */
+    SVDRP_PROPERTY_VERSION,       /**< VDR version */
+    SVDRP_PROPERTY_CHARSET,       /**< VDR server charset */
+} svdrp_property_t;
+
 /**
  * \name SVDRP (Un)Initialization.
  * @{
@@ -145,6 +152,17 @@ svdrp_t *svdrp_open(char* host, int port, int timeout, svdrp_verbosity_level_t v
  * Safetly destroy an SVDRP connection object.
  */
 void svdrp_close(svdrp_t *svdrp);
+
+/**
+ * \brief Get a property of the VDR server.
+ *
+ * \param[in] svdrp        an SVDRP connection object
+ * \param[in] property     the property to get
+ * \return                 the property value
+ *
+ * Returns the value of a property of the VDR server.
+ */
+const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property);
 
 /**
  * @}
