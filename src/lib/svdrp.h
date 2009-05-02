@@ -127,6 +127,7 @@ typedef enum {
     SVDRP_PROPERTY_NAME,          /**< VDR server name */
     SVDRP_PROPERTY_VERSION,       /**< VDR version */
     SVDRP_PROPERTY_CHARSET,       /**< VDR server charset */
+    SVDRP_PROPERTY_HOSTNAME,      /**< VDR server hostname */
 } svdrp_property_t;
 
 /**

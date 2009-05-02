@@ -302,6 +302,7 @@ const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property)
     case SVDRP_PROPERTY_NAME:    return svdrp->name;
     case SVDRP_PROPERTY_VERSION: return svdrp->version;
     case SVDRP_PROPERTY_CHARSET: return svdrp->charset;
+    case SVDRP_PROPERTY_HOSTNAME: return svdrp->host;
     }
     
     return NULL;
