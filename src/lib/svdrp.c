@@ -307,3 +307,66 @@ const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property)
     
     return NULL;
 }
+
+int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
+{
+    const int len = 10;
+    char cmd[len];
+
+    svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
+    
+    snprintf(cmd, len, "LSTT %i\n", timer_id);
+    
+    svdrp_send(svdrp, cmd);
+    
+    if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
+        unsigned char flags;
+        char *day;
+        char *s = strdup (svdrp->last_reply + 2);
+
+        /* 1:10:-T-----:2058:2150:50:5:Quarks & Co: */
+
+        if (!timer)
+            return SVDRP_ERROR;
+
+        timer->id = timer_id;      
+        timer->channel = atoi(strtok(s, ":"));
+
+        flags = (unsigned char)atoi(strtok(NULL, ":"));
+        day = strtok(NULL, ":");
+        timer->start = strtok(NULL, ":");
+        timer->stop = strtok(NULL, ":");
+        timer->priority = atoi (strtok(NULL, ":"));
+        timer->lifetime = atoi (strtok(NULL, ":"));
+        timer->file = strtok(NULL, ":");
+        timer->data = strtok(NULL, ":");
+        
+        timer->is_active = ((flags & SVDRP_TIMER_ACTIVE_FLAG) != 0);
+        timer->is_recording = ((flags & SVDRP_TIMER_RECORDING_FLAG) != 0);
+        timer->is_instant = ((flags & SVDRP_TIMER_INSTANT_FLAG) != 0);
+        timer->use_vps = ((flags & SVDRP_TIMER_VPS_FLAG) != 0);
+        
+        if (day[0] == 'M' || day[0] == '-') /* repeating timer */
+        { 
+            int i;
+            
+            for (i = 0; i < 7; i++)
+                if (day[i] != '-')
+                    timer->repeating |= ((unsigned char) (1 << i));
+                    
+            if (strlen(day) > 7 && day[7] == '@')
+                timer->first_date = strdup (day + 8);
+            else
+                timer->first_date = NULL;
+        }
+        else /* one shot timer */
+        {
+            timer->first_date = strdup (day);
+            timer->repeating = 0;
+        }
+
+        return SVDRP_OK;
+    } else { /* usually 501 Timer not defined */
+        return SVDRP_ERROR;
+    }
+}

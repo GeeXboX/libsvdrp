@@ -130,6 +130,36 @@ typedef enum {
     SVDRP_PROPERTY_HOSTNAME,      /**< VDR server hostname */
 } svdrp_property_t;
 
+#define SVDRP_MONDAY    ((unsigned char) (1 << 0))
+#define SVDRP_TUESDAY   ((unsigned char) (1 << 1))
+#define SVDRP_WEDNESDAY ((unsigned char) (1 << 2))
+#define SVDRP_THURSDAY  ((unsigned char) (1 << 3))
+#define SVDRP_FRIDAY    ((unsigned char) (1 << 4))
+#define SVDRP_SATURDAY  ((unsigned char) (1 << 5))
+#define SVDRP_SUNDAY    ((unsigned char) (1 << 6))
+
+#define SVDRP_TIMER_ACTIVE_FLAG     1
+#define SVDRP_TIMER_INSTANT_FLAG    2
+#define SVDRP_TIMER_VPS_FLAG        4
+#define SVDRP_TIMER_RECORDING_FLAG  8
+
+typedef struct svdrp_timer_s {
+    int id;
+    int channel;
+    char* first_date;
+    char* start;
+    char* stop;
+    unsigned char repeating;      /**< Days of the week the timer repeats (bitfield) */
+    int is_active;                /**< Whether the timer is active or not */
+    int is_recording;             /**< Whether the timer is currently recording or not */
+    int is_instant;               /**< Whether this is an instant recording timer */
+    int use_vps;                  /**< Whether the timer uses VPS */
+    int priority;                 /**< Timer priority (0-99), highest wins */
+    int lifetime;                 /**< Recording lifetime (0-99) */
+    char *file;                   /**< File name */
+    char *data;                   /**< Auxiliary data */
+} svdrp_timer_t;
+
 /**
  * \name SVDRP (Un)Initialization.
  * @{
@@ -225,6 +255,8 @@ int svdrp_osd_message (svdrp_t *svdrp, const char *msg);
  * information will not be returned.
  */
 int svdrp_next_timer_event(svdrp_t *svdrp, int *timer_id, time_t *time);
+
+int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer);
 
 int svdrp_volume_mute (svdrp_t *svdrp);
 int svdrp_volume_up (svdrp_t *svdrp);
