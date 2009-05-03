@@ -321,31 +321,33 @@ int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
     
     if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
         unsigned char flags;
-        char *day;
-        char *s = strdup (svdrp->last_reply + 2);
-
-        /* 1:10:-T-----:2058:2150:50:5:Quarks & Co: */
+        char day[256], start[256], stop[256], file[256], data[256];
 
         if (!timer)
             return SVDRP_ERROR;
 
-        timer->id = timer_id;      
-        timer->channel = atoi(strtok(s, ":"));
+        sscanf(svdrp->last_reply + 2, 
+               "%i:%hhi:%[^:]:%[^:]:%[^:]:%i:%i:%[^:]:%[^:]",
+               &(timer->channel),
+               &flags,
+               day,
+               start,
+               stop,
+               &(timer->priority),
+               &(timer->lifetime),
+               file,
+               data);
 
-        flags = (unsigned char)atoi(strtok(NULL, ":"));
-        day = strtok(NULL, ":");
-        timer->start = strtok(NULL, ":");
-        timer->stop = strtok(NULL, ":");
-        timer->priority = atoi (strtok(NULL, ":"));
-        timer->lifetime = atoi (strtok(NULL, ":"));
-        timer->file = strtok(NULL, ":");
-        timer->data = strtok(NULL, ":");
-        
+        timer->id = timer_id;
+        timer->start = strdup (start);
+        timer->stop = strdup (stop);
+        timer->file = strdup (file);
+        timer->data = strdup (data);
         timer->is_active = ((flags & SVDRP_TIMER_ACTIVE_FLAG) != 0);
         timer->is_recording = ((flags & SVDRP_TIMER_RECORDING_FLAG) != 0);
         timer->is_instant = ((flags & SVDRP_TIMER_INSTANT_FLAG) != 0);
         timer->use_vps = ((flags & SVDRP_TIMER_VPS_FLAG) != 0);
-        
+
         if (day[0] == 'M' || day[0] == '-') /* repeating timer */
         { 
             int i;
