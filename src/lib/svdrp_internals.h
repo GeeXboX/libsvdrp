@@ -33,6 +33,7 @@ struct svdrp_s {
     char *host;
     int port;
     int timeout;
+    int is_connected;
     int conn;
     int last_reply_code;
     char *last_reply;

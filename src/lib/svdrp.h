@@ -188,6 +188,28 @@ svdrp_t *svdrp_open(char* host, int port, int timeout, svdrp_verbosity_level_t v
 void svdrp_close(svdrp_t *svdrp);
 
 /**
+ * \brief Check if there's an active SVDRP connection and try to re-establish
+ *        it if necessary.
+ *
+ * \param[in] svdrp        an SVDRP connection object
+ * \return                 whether the connection attempt has been successful or not
+ *
+ * Checks whether there's an active SVDRP connection; if not, tries to open a
+ * new connection. Returns the SVDRP connection status.
+ */
+int svdrp_try_connect(svdrp_t *svdrp);
+
+/**
+ * \brief Check if there's an active SVDRP connection.
+ *
+ * \param[in] svdrp        an SVDRP connection object
+ * \return                 whether the SVDRP connection is active or not
+ *
+ * Returns the current SVDRP connection status.
+ */
+int svdrp_is_connected(svdrp_t *svdrp);
+
+/**
  * \brief Get a property of the VDR server.
  *
  * \param[in] svdrp        an SVDRP connection object

@@ -44,12 +44,10 @@ svdrp_t *svdrp_open (char* host, int port, int timeout, svdrp_verbosity_level_t 
 
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
     
-    if (svdrp_open_conn(svdrp)) {
-        return svdrp;
-    } else {
-        svdrp_close (svdrp);
-        return NULL;
-    }
+    if (!svdrp_open_conn(svdrp))
+        svdrp->is_connected = 0;
+    
+    return svdrp;
 }
 
 void svdrp_close (svdrp_t *svdrp)
@@ -291,6 +289,16 @@ int svdrp_set_remote(svdrp_t *svdrp, int state)
         cmd = "REMO off\n";
     
     return svdrp_simple_cmd(svdrp, cmd);
+}
+
+int svdrp_try_connect(svdrp_t *svdrp)
+{
+    return svdrp->is_connected ? 1 : svdrp_open_conn(svdrp);
+}
+
+int svdrp_is_connected(svdrp_t *svdrp)
+{
+    return svdrp->is_connected;
 }
 
 const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property)

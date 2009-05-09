@@ -72,7 +72,13 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
     svdrp_reply_code_t code;
     int read_next;
     
+    if (!svdrp)
+        return SVDRP_ERROR;
+    
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
+    
+    if (!(svdrp->is_connected))
+        return SVDRP_ERROR;
     
     do {
         line = svdrp_read(svdrp);
@@ -152,10 +158,11 @@ int svdrp_open_conn (svdrp_t *svdrp)
     }
     
     svdrp->conn = s;
+    svdrp->is_connected = 1;
     
     svdrp_read_reply(svdrp);
     
-    return s;
+    return 1;
 }
 
 void svdrp_close_conn (svdrp_t *svdrp)
@@ -164,6 +171,8 @@ void svdrp_close_conn (svdrp_t *svdrp)
     svdrp_log (svdrp, SVDRP_MSG_INFO, "Closing connection");
     
     close (svdrp->conn);
+    
+    svdrp->is_connected = 0;
 }
 
 int svdrp_send (svdrp_t *svdrp, const char* cmd)
@@ -176,9 +185,8 @@ int svdrp_send (svdrp_t *svdrp, const char* cmd)
     if (!svdrp)
         return -1;
         
-    if (!(svdrp->conn)) {
+    if (!(svdrp->is_connected))
         svdrp_open_conn (svdrp);
-    }
     
     do {
         char *logcmd = strdup (cmd);
