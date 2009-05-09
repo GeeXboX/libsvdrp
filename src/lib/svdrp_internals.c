@@ -21,6 +21,7 @@
 
 #include <errno.h>
 #include <netdb.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -52,38 +53,16 @@ static char* svdrp_read(svdrp_t *svdrp)
 
 static void svdrp_parse_banner(svdrp_t *svdrp, const char *banner)
 {
-    /* tardis SVDRP VideoDiskRecorder 1.6.0-2; Tue Apr 21 11:50:43 2009; UTF-8 */
-    char *mybanner = strdup(banner);
-    char *p, *q;
-    size_t len;
-    
+    char name[256], version[256], charset[256];
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
-    /* grab VDR name */
-    p = mybanner;
-    q = strstr(mybanner, " ");
-    len = q - p + 1;
-    *q = '\0';
-    svdrp->name = malloc(len);
-    strncpy(svdrp->name, p, len);
-    
-    /* grab VDR version number */
-    p = strstr(q + 1, "VideoDiskRecorder") + strlen("VideoDiskRecorder") + 1;
-    q = strstr(q + 1, ";");
-    len = q - p + 1;
-    *q = '\0';
-    svdrp->version = malloc (len);
-    strncpy(svdrp->version, p, len);
-    
-    /* grab VDR charset */
-    p = strstr(q + 1, ";") + 2;
-    q = p + strlen(p) - 2;
-    len = q - p + 1;
-    *q = '\0';
-    svdrp->charset = malloc(len);
-    strncpy(svdrp->charset, p, len);    
-    
-    free(mybanner);
+
+    sscanf(banner, "%s SVDRP VideoDiskRecorder %[^;]; %*[^;]; %s",
+           name, version, charset);
+
+    svdrp->name = strdup (name);
+    svdrp->version = strdup (version);
+    svdrp->charset = strdup (charset);
 }
 
 svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
