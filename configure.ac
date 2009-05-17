@@ -102,6 +102,7 @@ Makefile
 shave
 shave-libtool
 src/Makefile
+src/bin/Makefile
 src/lib/Makefile
 ])
 

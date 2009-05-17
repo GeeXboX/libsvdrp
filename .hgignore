@@ -40,3 +40,6 @@ syntax: regexp
 ^doxygen.cfg$
 ^libsvdrp.pc$
 ^libsvdrp-.*\.tar\.bz2$
+
+^src/bin/.libs$
+^src/bin/getwakeup$
