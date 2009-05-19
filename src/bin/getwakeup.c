@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 
     ret = svdrp_next_timer_event(svdrp, &timer_id, &time);
     if (ret == SVDRP_OK) {
-        gmtime_r(&time, &tm);
+        localtime_r(&time, &tm);
         tm.tm_min -= WAKEUP_MARGIN;
         strftime(time_str, 256, "%s", &tm);
         printf("%s\n", time_str);
