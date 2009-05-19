@@ -51,6 +51,7 @@ int main (int argc, char **argv)
     if (ret == SVDRP_OK) {
         localtime_r(&time, &tm);
         tm.tm_min -= WAKEUP_MARGIN;
+        mktime(&tm);
         strftime(time_str, 256, "%s", &tm);
         printf("%s\n", time_str);
         svdrp_close(svdrp);
