@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <svdrp.h>
 #include <string.h>
+#include <getopt.h>
 
 #define WAKEUP_MARGIN 10
 
@@ -40,6 +41,38 @@ int main (int argc, char **argv)
     int timer_id;
     int ret;
     char time_str[256];
+    int option;
+
+    const char *const short_options = "v:l";
+    const struct option long_options [] = {
+        {"verbose", required_argument, NULL, 'v'},
+        {"localtime", no_argument, NULL, 'l'},
+        {"help", no_argument, NULL, 'h'},
+        {0, 0, 0, 0}
+    };
+
+    while ((option=getopt_long(argc, argv, short_options, long_options, NULL))>0) {
+        switch(option)
+        {
+            case 'v':
+                if (!strcmp(optarg, "none")) verbosity=SVDRP_MSG_NONE;
+                else if (!strcmp(optarg, "verbose")) verbosity=SVDRP_MSG_VERBOSE;
+                else if (!strcmp(optarg, "info")) verbosity=SVDRP_MSG_INFO;
+                else if (!strcmp(optarg, "warning")) verbosity=SVDRP_MSG_WARNING;
+                else if (!strcmp(optarg, "error")) verbosity=SVDRP_MSG_ERROR;
+                else if (!strcmp(optarg, "critical")) verbosity=SVDRP_MSG_CRITICAL;
+                else { fprintf(stderr, "invalid verbosity level: %s\n", optarg); return -1; }
+                break;
+            case 'l':
+                convert_time=1;
+                break;
+            case 'h':
+            default:
+                fprintf(stderr, "usage: %s [-h|--help] [-l|--localtime] [-[v|--verbose] [none|verbose|info|warning|error|critical]]\n" \
+                        "   note: if your hardware clock runs on localtime, use -l for being able to use the output as bios wakeup time.\n", argv[0]);
+                return -1;
+        } 
+    }
     
     svdrp = svdrp_open(hostname, port, timeout, verbosity);
     
