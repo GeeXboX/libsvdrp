@@ -34,6 +34,7 @@ int main (int argc, char **argv)
     int timeout = 10;
     svdrp_verbosity_level_t verbosity = SVDRP_MSG_ERROR;
     svdrp_t *svdrp;
+    int convert_time = 0;
     struct tm tm;
     time_t time;
     int timer_id;
@@ -50,6 +51,8 @@ int main (int argc, char **argv)
     ret = svdrp_next_timer_event(svdrp, &timer_id, &time);
     if (ret == SVDRP_OK) {
         localtime_r(&time, &tm);
+        if (convert_time)
+            tm.tm_sec += tm.tm_gmtoff;
         tm.tm_min -= WAKEUP_MARGIN;
         mktime(&tm);
         strftime(time_str, 256, "%s", &tm);
