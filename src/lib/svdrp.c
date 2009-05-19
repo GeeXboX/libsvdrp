@@ -121,12 +121,14 @@ int svdrp_next_timer_event (svdrp_t *svdrp, int *timer_id, time_t *time)
         int mytimer;
         struct tm tm;
         char *time_str = strstr(svdrp->last_reply, " ") + 1;
+        char full_time_str[256];
         
         mytimer = atoi (svdrp->last_reply);
         strptime(time_str, "%s", &tm);
+        strftime(full_time_str, 256, "%Y-%m-%d %H:%M:%S %z(%Z) (stamp: %s)", &tm);
         
         svdrp_log (svdrp, SVDRP_MSG_INFO, "Next timer %i at %s", mytimer,
-                   asctime(&tm));
+                   full_time_str);
         
         if (timer_id)
             *timer_id = mytimer;
