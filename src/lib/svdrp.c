@@ -119,7 +119,7 @@ int svdrp_next_timer_event (svdrp_t *svdrp, int *timer_id, time_t *time)
     
     if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
         int mytimer;
-        struct tm tm;
+        struct tm tm = {0};
         char *time_str = strstr(svdrp->last_reply, " ") + 1;
         char full_time_str[256];
         

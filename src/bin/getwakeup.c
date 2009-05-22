@@ -36,12 +36,12 @@ int main (int argc, char **argv)
     svdrp_verbosity_level_t verbosity = SVDRP_MSG_ERROR;
     svdrp_t *svdrp;
     int convert_time = 0;
-    struct tm tm;
-    time_t time;
-    int timer_id;
-    int ret;
+    struct tm tm = {0};
+    time_t time = 0;
+    int timer_id = -1;
+    int ret = 0;
     char time_str[256];
-    int option;
+    int option = -1;
 
     const char *const short_options = "v:l";
     const struct option long_options [] = {
