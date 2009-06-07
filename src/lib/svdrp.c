@@ -94,7 +94,7 @@ int svdrp_epg_clear (svdrp_t *svdrp, int channel_id)
         snprintf(cmd, len, "CLRE %i\n", channel_id);
     } else {
         svdrp_log (svdrp, SVDRP_MSG_INFO, "Clear EPG list");
-        cmd = "CLRE\n";
+        cmd = strdup ("CLRE\n");
     }
     
     ret = svdrp_simple_cmd (svdrp, cmd);
