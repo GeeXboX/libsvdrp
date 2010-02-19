@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_DEFUN([MAJOR], [0])
-AC_DEFUN([MINOR], [0])
-AC_DEFUN([MICRO], [1])
+m4_define([MAJOR], [0])
+m4_define([MINOR], [0])
+m4_define([MICRO], [1])
 AC_INIT([libsvdrp],[MAJOR.MINOR.MICRO],[www.geexbox.org])
 AC_CONFIG_SRCDIR([src/lib/svdrp.h])
 AC_CONFIG_HEADERS([config.h])
