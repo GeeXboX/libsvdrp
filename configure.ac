@@ -75,8 +75,8 @@ DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(ON)
 DX_INIT_DOXYGEN($PACKAGE_NAME, doxygen.cfg, docs)
 
-# Enable shave by default
-SHAVE_INIT([.], [enable])
+# silent rules require automake 1.11
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 if test "x$GCC" = "xyes"; then
   CFLAGS="$CFLAGS -Wall -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
@@ -99,8 +99,6 @@ AC_CONFIG_FILES([
 doxygen.cfg
 libsvdrp.pc
 Makefile
-shave
-shave-libtool
 src/Makefile
 src/bin/Makefile
 src/lib/Makefile
