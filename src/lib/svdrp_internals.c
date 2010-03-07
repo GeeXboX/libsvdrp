@@ -146,6 +146,12 @@ int svdrp_open_conn (svdrp_t *svdrp)
       man 7 socket
     */
     host = gethostbyname (svdrp->host);
+
+    if (!host) {
+        svdrp_log (svdrp, SVDRP_MSG_ERROR, "Connection failed (gethostbyname)");
+        return 0;
+    }
+
     memcpy (&addr.sin_addr.s_addr, host->h_addr, host->h_length);
     addr.sin_family = AF_INET;
     addr.sin_port = htons (svdrp->port);
