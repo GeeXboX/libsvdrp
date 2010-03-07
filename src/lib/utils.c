@@ -31,7 +31,7 @@ static ssize_t read_wrapper(int fd, char *buf)
     static int count = 0;
     static char *p;
     static char read_buf[MAXLINE];
-    
+
     if (count <= 0) {
         int keep_reading = 0;
         do {
@@ -47,7 +47,7 @@ static ssize_t read_wrapper(int fd, char *buf)
             p = read_buf;
         } while (keep_reading);
     }
-    
+
     count--;
     *buf = *p++;
     return 1;
@@ -58,7 +58,7 @@ int readline(int fd, void *buf, int maxlen)
     int n, count;
     char c;
     char *p = buf;
-    
+
     for (n = 1; n < maxlen; n++) {
         count = read_wrapper(fd, &c);
         if (count == 1) {
@@ -74,7 +74,7 @@ int readline(int fd, void *buf, int maxlen)
             return -1;
         }
     }
-   
+
     *p = 0;
     return n;
 }

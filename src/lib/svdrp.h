@@ -60,7 +60,7 @@ typedef enum {
     SVDRP_MSG_CRITICAL,      /**< prevents lib from working */
 } svdrp_verbosity_level_t;
 
-/** 
+/**
  * \brief Keys accepted by VDR.
  *
  * The list of keys understood by VDR, which can be given to svdrp_hit_key.
@@ -229,7 +229,7 @@ const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property);
  * @{
  */
 
-/** 
+/**
  * \brief Clear the EPG list.
  *
  * \param[in] svdrp        an SVDRP connection object
@@ -240,7 +240,7 @@ const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property);
  */
 int svdrp_epg_clear (svdrp_t *svdrp, int channel_id);
 
-/** 
+/**
  * \brief Force an EPG scan.
  *
  * \param[in] svdrp        an SVDRP connection object
@@ -250,7 +250,7 @@ int svdrp_epg_clear (svdrp_t *svdrp, int channel_id);
  */
 int svdrp_epg_scan (svdrp_t *svdrp);
 
-/** 
+/**
  * \brief Displays the given message on the OSD.
  *
  * \param[in] svdrp        an SVDRP connection object
@@ -263,14 +263,14 @@ int svdrp_epg_scan (svdrp_t *svdrp);
  */
 int svdrp_osd_message (svdrp_t *svdrp, const char *msg);
 
-/** 
+/**
  * \brief Get the next timer event.
  *
  * \param[in] svdrp        an SVDRP connection object
  * \param[out] timer_id    the number of the next timer
  * \param[out] time        the time when the next timer will fire
  * \return                 SVDRP_OK on success, SVDRP_ERROR otherwise.
- * 
+ *
  * Shows the next timer event as the number of seconds since the epoch. If
  * smaller than the current time, the timer is currently recording and has
  * started at the given time. If timer_id or time are NULL the respective

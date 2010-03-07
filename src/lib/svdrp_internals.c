@@ -34,20 +34,20 @@
 
 #define SVDRP_MAX_TRIES 10
 #define MAXLINE 1024
- 
+
 static char* svdrp_read(svdrp_t *svdrp)
 {
     char* buf;
     char line[MAXLINE];
     int len;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     len = readline (svdrp->conn, &line, MAXLINE);
-    
+
     buf = malloc(len);
     strncpy(buf, line, len);
-    
+
     return buf;
 }
 
@@ -71,20 +71,20 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
     char strcode[3];
     svdrp_reply_code_t code;
     int read_next;
-    
+
     if (!svdrp)
         return SVDRP_ERROR;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (!(svdrp->is_connected))
         return SVDRP_ERROR;
-    
+
     do {
         line = svdrp_read(svdrp);
         strncpy(strcode, line, 3);
         code = atoi (line);
-        
+
         switch (code)
         {
         case SVDRP_REPLY_HELP:
@@ -110,7 +110,7 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
             svdrp_log (svdrp, SVDRP_MSG_INFO, "Operation successfully completed");
             break;
         }
-        
+
         if (line[3] == '-') {
             read_next = 1;
             free(line);
@@ -118,10 +118,10 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
             read_next = 0;
         }
     } while (read_next);
-    
+
     svdrp->last_reply_code = code;
     svdrp->last_reply = line + 4;
-    
+
     return code;
 }
 
@@ -130,16 +130,16 @@ int svdrp_open_conn (svdrp_t *svdrp)
     struct sockaddr_in addr;
     struct hostent *host;
     int s;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (!svdrp)
         return 0;
-    
+
     s = socket (AF_INET, SOCK_STREAM, 0);
     if (s < 0)
         return 0;
-        
+
     /*
       TODO set socket timeout
       man setsockopt
@@ -155,19 +155,19 @@ int svdrp_open_conn (svdrp_t *svdrp)
     memcpy (&addr.sin_addr.s_addr, host->h_addr, host->h_length);
     addr.sin_family = AF_INET;
     addr.sin_port = htons (svdrp->port);
-    
+
     svdrp_log (svdrp, SVDRP_MSG_INFO, "Opening connection to %s:%i", svdrp->host, svdrp->port);
-    
+
     if (connect (s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         svdrp_log (svdrp, SVDRP_MSG_ERROR, "Connection failed with error %i", errno);
         return 0;
     }
-    
+
     svdrp->conn = s;
     svdrp->is_connected = 1;
-    
+
     svdrp_read_reply(svdrp);
-    
+
     return 1;
 }
 
@@ -175,25 +175,25 @@ void svdrp_close_conn (svdrp_t *svdrp)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
     svdrp_log (svdrp, SVDRP_MSG_INFO, "Closing connection");
-    
+
     close (svdrp->conn);
-    
+
     svdrp->is_connected = 0;
 }
 
 int svdrp_send (svdrp_t *svdrp, const char* cmd)
 {
-    int ret; 
-    int tries = 0;  
+    int ret;
+    int tries = 0;
 
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (!svdrp)
         return -1;
-        
+
     if (!(svdrp->is_connected))
         svdrp_open_conn (svdrp);
-    
+
     do {
         char *logcmd = strdup (cmd);
         logcmd[strlen(logcmd) - 1] = '\0'; /* strip newline from logged cmd */
@@ -201,13 +201,13 @@ int svdrp_send (svdrp_t *svdrp, const char* cmd)
         free (logcmd);
         tries++;
         ret = write (svdrp->conn, cmd, strlen (cmd));
-    
+
         if (ret == -1) {
             svdrp_log (svdrp, SVDRP_MSG_WARNING, "Write failed");
             svdrp_close_conn (svdrp);
             svdrp_open_conn (svdrp);
         }
     } while (ret == -1 && tries < SVDRP_MAX_TRIES);
-    
+
     return ret;
 }

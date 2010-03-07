@@ -28,55 +28,55 @@
 #include "svdrp.h"
 #include "svdrp_internals.h"
 #include "logs.h"
- 
+
 svdrp_t *svdrp_open (char* host, int port, int timeout, svdrp_verbosity_level_t verbosity)
 {
     svdrp_t *svdrp = NULL;
-    
+
     svdrp = calloc (1, sizeof (svdrp_t));
     if (!svdrp)
         return NULL;
-        
+
     svdrp->host = strdup (host);
     svdrp->port = port ? port : SVDRP_DEFAULT_PORT;
     svdrp->timeout = timeout ? timeout : SVDRP_DEFAULT_TIMEOUT;
     svdrp->verbosity = verbosity;
 
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (!svdrp_open_conn(svdrp))
         svdrp->is_connected = 0;
-    
+
     return svdrp;
 }
 
 void svdrp_close (svdrp_t *svdrp)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (!svdrp)
         return;
-        
+
     if (svdrp->conn)
         svdrp_close_conn (svdrp);
 
     if (svdrp->host)
         free (svdrp->host);
-    
-    /* FIXME make sure to properly free all members */             
+
+    /* FIXME make sure to properly free all members */
     free (svdrp);
 }
 
 static int svdrp_simple_cmd (svdrp_t *svdrp, const char *cmd)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     svdrp_send(svdrp, cmd);
-    
+
     if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK)
         return SVDRP_OK;
     else
-        return SVDRP_ERROR;   
+        return SVDRP_ERROR;
 }
 
 int svdrp_epg_clear (svdrp_t *svdrp, int channel_id)
@@ -85,54 +85,54 @@ int svdrp_epg_clear (svdrp_t *svdrp, int channel_id)
     int ret;
 
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (channel_id) {
         const size_t len = 15;
         cmd = malloc (len);
-        
+
         svdrp_log (svdrp, SVDRP_MSG_INFO, "Clear EPG for channel '%i'", channel_id);
         snprintf(cmd, len, "CLRE %i\n", channel_id);
     } else {
         svdrp_log (svdrp, SVDRP_MSG_INFO, "Clear EPG list");
         cmd = strdup ("CLRE\n");
     }
-    
+
     ret = svdrp_simple_cmd (svdrp, cmd);
     free (cmd);
-    
-    return ret;    
+
+    return ret;
 }
 
 int svdrp_epg_scan (svdrp_t *svdrp)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
     svdrp_log (svdrp, SVDRP_MSG_INFO, "Begin EPG scan");
-    
+
     return svdrp_simple_cmd (svdrp, "SCAN\n");
 }
 
 int svdrp_next_timer_event (svdrp_t *svdrp, int *timer_id, time_t *time)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     svdrp_send(svdrp, "NEXT abs\n");
-    
+
     if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
         int mytimer;
         struct tm tm = {0};
         char *time_str = strstr(svdrp->last_reply, " ") + 1;
         char full_time_str[256];
-        
+
         mytimer = atoi (svdrp->last_reply);
         strptime(time_str, "%s", &tm);
         strftime(full_time_str, 256, "%Y-%m-%d %H:%M:%S %z(%Z) (stamp: %s)", &tm);
-        
+
         svdrp_log (svdrp, SVDRP_MSG_INFO, "Next timer %i at %s", mytimer,
                    full_time_str);
-        
+
         if (timer_id)
             *timer_id = mytimer;
-            
+
         if (time)
             *time = mktime(&tm);
 
@@ -147,20 +147,20 @@ int svdrp_osd_message (svdrp_t *svdrp, const char *msg)
     const size_t len = strlen(msg) + 7;
     char *cmd;
     int ret;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (!msg) {
         svdrp_log (svdrp, SVDRP_MSG_WARNING, "Cannot send empty OSD message");
         return SVDRP_ERROR;
     }
-    
+
     cmd = malloc (len);
     svdrp_log (svdrp, SVDRP_MSG_INFO, "OSD message '%s'", msg);
-    snprintf (cmd, len, "MESG %s\n", msg);    
+    snprintf (cmd, len, "MESG %s\n", msg);
     ret = svdrp_simple_cmd (svdrp, cmd);
     free(cmd);
-    
+
     return ret;
 }
 
@@ -225,21 +225,21 @@ int svdrp_hit_key(svdrp_t *svdrp, svdrp_key_t key)
     const size_t len = strlen(keys[key]) + 7;
     char *cmd = malloc(len);
     int ret;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
     svdrp_log (svdrp, SVDRP_MSG_INFO, "Hit key '%s'", keys[key]);
-    
+
     snprintf (cmd, len, "HITK %s\n", keys[key]);
     ret = svdrp_simple_cmd(svdrp, cmd);
     free(cmd);
-    
+
     return ret;
 }
 
 int svdrp_volume_mute (svdrp_t *svdrp)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     return svdrp_simple_cmd(svdrp, "VOLU mute\n");
 }
 
@@ -253,8 +253,8 @@ int svdrp_volume_up (svdrp_t *svdrp)
 int svdrp_volume_down (svdrp_t *svdrp)
 {
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
-    return svdrp_simple_cmd(svdrp, "VOLU -\n");   
+
+    return svdrp_simple_cmd(svdrp, "VOLU -\n");
 }
 
 int svdrp_volume_set (svdrp_t *svdrp, int volume)
@@ -262,34 +262,34 @@ int svdrp_volume_set (svdrp_t *svdrp, int volume)
     const int len = 10;
     char cmd[len];
     int ret;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (volume < 0 || volume > 255) {
         svdrp_log (svdrp, SVDRP_MSG_WARNING, "Illegal volume: %i", volume);
-        
+
         return SVDRP_ERROR;
     }
-    
+
     svdrp_log (svdrp, SVDRP_MSG_INFO, "Set volume to %i", volume);
-    
+
     snprintf(cmd, len, "VOLU %i\n", volume);
     ret = svdrp_simple_cmd(svdrp, cmd);
-    
-    return ret;   
+
+    return ret;
 }
 
 int svdrp_set_remote(svdrp_t *svdrp, int state)
 {
     char *cmd;
-    
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     if (state)
         cmd = "REMO on\n";
     else
         cmd = "REMO off\n";
-    
+
     return svdrp_simple_cmd(svdrp, cmd);
 }
 
@@ -314,7 +314,7 @@ const char *svdrp_get_property(svdrp_t *svdrp, svdrp_property_t property)
     case SVDRP_PROPERTY_CHARSET: return svdrp->charset;
     case SVDRP_PROPERTY_HOSTNAME: return svdrp->host;
     }
-    
+
     return NULL;
 }
 
@@ -324,11 +324,11 @@ int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
     char cmd[len];
 
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
-    
+
     snprintf(cmd, len, "LSTT %i\n", timer_id);
-    
+
     svdrp_send(svdrp, cmd);
-    
+
     if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
         unsigned char flags;
         char day[256], start[256], stop[256], file[256], data[256];
@@ -336,7 +336,7 @@ int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
         if (!timer)
             return SVDRP_ERROR;
 
-        sscanf(svdrp->last_reply + 2, 
+        sscanf(svdrp->last_reply + 2,
                "%i:%hhi:%[^:]:%[^:]:%[^:]:%i:%i:%[^:]:%[^:]",
                &(timer->channel),
                &flags,
@@ -359,13 +359,13 @@ int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
         timer->use_vps = ((flags & SVDRP_TIMER_VPS_FLAG) != 0);
 
         if (day[0] == 'M' || day[0] == '-') /* repeating timer */
-        { 
+        {
             int i;
-            
+
             for (i = 0; i < 7; i++)
                 if (day[i] != '-')
                     timer->repeating |= ((unsigned char) (1 << i));
-                    
+
             if (strlen(day) > 7 && day[7] == '@')
                 timer->first_date = strdup (day + 8);
             else

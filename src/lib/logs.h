@@ -39,7 +39,7 @@
  * Records a message in the log. If the log verbosity level is higher than the
  * message level the message will not be displayed.
  */
-void svdrp_log (svdrp_t *svdrp, svdrp_verbosity_level_t level, 
+void svdrp_log (svdrp_t *svdrp, svdrp_verbosity_level_t level,
            const char *format, ...);
 
 #endif /* SVDRP_LOGS_H */

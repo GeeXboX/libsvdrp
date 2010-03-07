@@ -89,7 +89,7 @@ svdrp_log (svdrp_t *svdrp, svdrp_verbosity_level_t level, const char *format, ..
     va_start (va, format);
 
 #ifdef USE_LOGCOLOR
-    fprintf (stderr, "[" BOLD "libsvdrp" NORMAL "] %s%s" NORMAL ": ", 
+    fprintf (stderr, "[" BOLD "libsvdrp" NORMAL "] %s%s" NORMAL ": ",
         c[level], l[level]);
 #else
     fprintf (stderr, "[libsvdrp] %s: ", l[level]);

@@ -43,9 +43,9 @@ struct svdrp_s {
 };
 
 /* SVDRP Reply Codes
-Reply codes are in the format 
+Reply codes are in the format
 <Reply code><-|Space><Text><Newline>
-In the last line the "-" is replace be a space. 
+In the last line the "-" is replace be a space.
 
 901..999 Plugin specific reply codes
 */
@@ -58,7 +58,7 @@ typedef enum svdrp_reply_code {
     SVDRP_REPLY_READY              = 220, /**< VDR service ready */
     SVDRP_REPLY_QUIT               = 221, /**< VDR service closing transmission
                                            *   channel */
-    SVDRP_REPLY_OK                 = 250, /**< Requested VDR action okay, 
+    SVDRP_REPLY_OK                 = 250, /**< Requested VDR action okay,
                                            *   completed */
     SVDRP_REPLY_EPG_START          = 354, /**< Start sending EPG data */
     SVDRP_REPLY_ABORT              = 451, /**< Requested action aborted: local
@@ -68,7 +68,7 @@ typedef enum svdrp_reply_code {
     SVDRP_REPLY_UNKNOWN_PARAM      = 501, /**< Syntax error in parameters or
                                            *   arguments */
     SVDRP_REPLY_UNIMPEMENTED_CMD   = 502, /**< Command not implemented */
-    SVDRP_REPLY_UNIMPEMENTED_PARAM = 504, /**< Command parameter not 
+    SVDRP_REPLY_UNIMPEMENTED_PARAM = 504, /**< Command parameter not
                                            *   implemented */
     SVDRP_REPLY_ACTION_NOT_TAKEN   = 550, /**< Requested action not taken */
     SVDRP_REPLY_TRANSACTION_FAILED = 554, /**< Transaction failed */
