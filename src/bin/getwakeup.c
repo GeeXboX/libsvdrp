@@ -68,7 +68,7 @@ int main (int argc, char **argv)
                 break;
             case 'h':
             default:
-                fprintf(stderr, "usage: %s [-h|--help] [-l|--localtime] [-[v|--verbose] [none|verbose|info|warning|error|critical]]\n" \
+                fprintf(stderr, "usage: %s [-h|--help] [-l|--localtime] [-v|--verbose] [none|verbose|info|warning|error|critical]]\n" \
                         "   note: if your hardware clock runs on localtime, use -l for being able to use the output as bios wakeup time.\n", argv[0]);
                 return -1;
         }
