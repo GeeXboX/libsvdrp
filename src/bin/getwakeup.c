@@ -26,7 +26,7 @@
 #include <string.h>
 #include <getopt.h>
 
-#define WAKEUP_MARGIN 10
+#define DEFAULT_WAKEUP_MARGIN 10
 
 int main (int argc, char **argv)
 {
@@ -42,12 +42,14 @@ int main (int argc, char **argv)
     int ret = 0;
     char time_str[256];
     int option = -1;
+    int wakeup_margin = DEFAULT_WAKEUP_MARGIN;
 
-    const char *const short_options = "v:l";
+    const char *const short_options = "v:l:m:h";
     const struct option long_options [] = {
         {"verbose", required_argument, NULL, 'v'},
         {"localtime", no_argument, NULL, 'l'},
         {"help", no_argument, NULL, 'h'},
+        {"wakeup-margin", required_argument, NULL, 'm'},
         {0, 0, 0, 0}
     };
 
@@ -66,9 +68,13 @@ int main (int argc, char **argv)
             case 'l':
                 convert_time=1;
                 break;
+            case 'm':
+		fprintf(stderr, "optarg value: %s", optarg);
+                //wakeup_margin=atoi(optarg);
+                break;
             case 'h':
             default:
-                fprintf(stderr, "usage: %s [-h|--help] [-l|--localtime] [-v|--verbose] [none|verbose|info|warning|error|critical]]\n" \
+                fprintf(stderr, "usage: %s [-h|--help] [-l|--localtime] [-m|--wakeup-margin <minutes>] [-v|--verbose] [none|verbose|info|warning|error|critical]]\n" \
                         "   note: if your hardware clock runs on localtime, use -l for being able to use the output as bios wakeup time.\n", argv[0]);
                 return -1;
         }
@@ -86,7 +92,7 @@ int main (int argc, char **argv)
         localtime_r(&time, &tm);
         if (convert_time)
             tm.tm_sec += tm.tm_gmtoff;
-        tm.tm_min -= WAKEUP_MARGIN;
+        tm.tm_min -= wakeup_margin;
         mktime(&tm);
         strftime(time_str, 256, "%s", &tm);
         printf("%s\n", time_str);
