@@ -78,12 +78,16 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
 
     if (!(svdrp->is_connected))
+    {
+        svdrp_log (svdrp, SVDRP_MSG_WARNING, "svdrp not connected");
         return SVDRP_ERROR;
+    }
 
     do {
         line = svdrp_read(svdrp);
         strncpy(strcode, line, 3);
         code = atoi (strcode);
+        svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "vdr reply was: code %i, %s", code, line);
 
         switch (code)
         {
@@ -109,6 +113,8 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
         case SVDRP_REPLY_OK:
             svdrp_log (svdrp, SVDRP_MSG_INFO, "Operation successfully completed");
             break;
+        default:
+            svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "Unknown return code: %i", code);
         }
 
         if (line[3] == '-') {
