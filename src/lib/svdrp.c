@@ -113,9 +113,18 @@ int svdrp_epg_scan (svdrp_t *svdrp)
 
 int svdrp_next_timer_event (svdrp_t *svdrp, int *timer_id, time_t *time)
 {
+    svdrp_reply_code_t code;
+
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
 
     svdrp_send(svdrp, "NEXT abs\n");
+
+    code=svdrp_read_reply(svdrp);
+    if (code == SVDRP_REPLY_QUIT) //retry
+    {
+      svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "vdr has closed connection, retrying...");
+      code=svdrp_send(svdrp, "NEXT abs\n");
+    }
 
     if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
         int mytimer;
