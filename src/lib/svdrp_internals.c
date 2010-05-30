@@ -93,7 +93,6 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
         {
         case SVDRP_REPLY_HELP:
         case SVDRP_REPLY_EPG_DATA:
-        case SVDRP_REPLY_QUIT:
         case SVDRP_REPLY_EPG_START:
         case SVDRP_REPLY_ABORT:
         case SVDRP_REPLY_UNKNOWN_CMD:
@@ -105,6 +104,10 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
         case SVDRP_REPLY_GRAB_DATA:
         case SVDRP_REPLY_PLUGIN:
             /* not implemented */
+            break;
+        case SVDRP_REPLY_QUIT:
+            svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "Vdr closed control connection");
+            svdrp->is_connected = 0;
             break;
         case SVDRP_REPLY_READY:
             svdrp_parse_banner(svdrp, line + 4);
