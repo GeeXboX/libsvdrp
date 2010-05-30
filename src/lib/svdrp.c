@@ -126,7 +126,7 @@ int svdrp_next_timer_event (svdrp_t *svdrp, int *timer_id, time_t *time)
       code=svdrp_send(svdrp, "NEXT abs\n");
     }
 
-    if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
+    if (code == SVDRP_REPLY_OK) {
         int mytimer;
         struct tm tm = {0};
         char *time_str = strstr(svdrp->last_reply, " ") + 1;
