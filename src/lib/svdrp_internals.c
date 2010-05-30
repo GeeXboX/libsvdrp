@@ -83,7 +83,7 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
     do {
         line = svdrp_read(svdrp);
         strncpy(strcode, line, 3);
-        code = atoi (line);
+        code = atoi (strcode);
 
         switch (code)
         {
