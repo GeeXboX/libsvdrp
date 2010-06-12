@@ -45,7 +45,8 @@ static char* svdrp_read(svdrp_t *svdrp)
 
     len = readline (svdrp->conn, &line, MAXLINE);
 
-    buf = malloc(len);
+    buf = malloc(len+1);
+    memset(buf, 0, len+1);
     strncpy(buf, line, len);
 
     return buf;
@@ -68,7 +69,7 @@ static void svdrp_parse_banner(svdrp_t *svdrp, const char *banner)
 svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
 {
     char *line;
-    char strcode[3];
+    char strcode[4]={0,0,0,0};
     svdrp_reply_code_t code;
     int read_next;
 
@@ -107,7 +108,7 @@ svdrp_reply_code_t svdrp_read_reply(svdrp_t *svdrp)
             break;
         case SVDRP_REPLY_QUIT:
             svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "Vdr closed control connection");
-            svdrp->is_connected = 0;
+            svdrp_close_conn(svdrp);
             break;
         case SVDRP_REPLY_READY:
             svdrp_parse_banner(svdrp, line + 4);
