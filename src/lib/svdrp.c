@@ -122,8 +122,8 @@ int svdrp_next_timer_event (svdrp_t *svdrp, int *timer_id, time_t *time)
     code=svdrp_read_reply(svdrp);
     if (code == SVDRP_REPLY_QUIT) //retry
     {
-      svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "vdr has closed connection, retrying...");
-      code=svdrp_send(svdrp, "NEXT abs\n");
+        svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "vdr has closed connection, retrying...");
+        code=svdrp_send(svdrp, "NEXT abs\n");
     }
 
     if (code == SVDRP_REPLY_OK) {
@@ -331,6 +331,7 @@ int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
 {
     const int len = 10;
     char cmd[len];
+    svdrp_reply_code_t code;
 
     svdrp_log (svdrp, SVDRP_MSG_VERBOSE, __FUNCTION__);
 
@@ -338,7 +339,14 @@ int svdrp_get_timer(svdrp_t *svdrp, int timer_id, svdrp_timer_t *timer)
 
     svdrp_send(svdrp, cmd);
 
-    if (svdrp_read_reply(svdrp) == SVDRP_REPLY_OK) {
+    code=svdrp_read_reply(svdrp);
+    if (code == SVDRP_REPLY_QUIT) //retry
+    {
+      svdrp_log (svdrp, SVDRP_MSG_VERBOSE, "vdr has closed connection, retrying...");
+      code=svdrp_send(svdrp, cmd);
+    }
+
+    if (code == SVDRP_REPLY_OK) {
         unsigned char flags;
         char day[256], start[256], stop[256], file[256], data[256];
 
