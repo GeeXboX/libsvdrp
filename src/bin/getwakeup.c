@@ -44,7 +44,7 @@ int main (int argc, char **argv)
     int option = -1;
     int wakeup_margin = DEFAULT_WAKEUP_MARGIN;
 
-    const char *const short_options = "v:l:m:h";
+    const char *const short_options = "v:lm:h";
     const struct option long_options [] = {
         {"verbose", required_argument, NULL, 'v'},
         {"localtime", no_argument, NULL, 'l'},
