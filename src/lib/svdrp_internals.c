@@ -45,8 +45,7 @@ static char* svdrp_read(svdrp_t *svdrp)
 
     len = readline (svdrp->conn, &line, MAXLINE);
 
-    buf = malloc(len+1);
-    memset(buf, 0, len+1);
+    buf = calloc(1, len+1);
     strncpy(buf, line, len);
 
     return buf;
